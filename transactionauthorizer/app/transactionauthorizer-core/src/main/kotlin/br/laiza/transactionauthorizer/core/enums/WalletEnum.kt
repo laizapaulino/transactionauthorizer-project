@@ -19,8 +19,8 @@ enum class WalletEnum {
         fun fromMerchantName(name: String): WalletEnum {
             val nameUpper = name.uppercase(Locale.getDefault())
             return when {
-                listOf("MERCADO", "MARKET", "FOOD").any { nameUpper.contains(it) } -> FOOD
-                listOf("PADARIA", "BAR", "BAKERY", "RESTAURANT", "EATS").any { nameUpper.contains(it) } -> MEAL
+                listOf("MERCADO", "MARKET", "FOOD", "ACOUGUE").any { nameUpper.contains(it) } -> FOOD
+                listOf("PADARIA", "BAR", "BAKERY", "RESTAURANT", "EATS", "LANCH").any { nameUpper.contains(it) } -> MEAL
                 else -> CASH
             }
         }

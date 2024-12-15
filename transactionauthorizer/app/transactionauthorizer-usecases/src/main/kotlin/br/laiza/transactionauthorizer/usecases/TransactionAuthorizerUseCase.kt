@@ -36,7 +36,7 @@ open class TransactionAuthorizerUseCase(
         )
 
 
-        val transactionMessage: TransactionMessage = TransactionMessage(
+        val transactionMessage = TransactionMessage(
             account = request.account,
             transactionDate = LocalDateTime.now(),
             amountTransaction = request.totalAmount,
@@ -91,10 +91,8 @@ open class TransactionAuthorizerUseCase(
             if (amountAvailableAux < 0) {
                 throw InsuficientFundsException("Insuficient funds")
             }
-
             mapWallets[WalletEnum.CASH.name] = amountAvailableAux
             mapWallets[wallet.name] = 0.0
-
         } else {
             mapWallets[WalletEnum.CASH.name] = amountAvailable
         }
