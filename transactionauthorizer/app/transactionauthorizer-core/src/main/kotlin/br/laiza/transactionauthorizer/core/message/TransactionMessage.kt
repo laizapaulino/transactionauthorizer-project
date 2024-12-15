@@ -10,5 +10,6 @@ data class TransactionMessage(
     val amountTransaction: Double,
     val newAmountWalletFood: Double,
     val newAmountWalletMeal: Double,
-    val newAmountWalletCash: Double
+    val newAmountWalletCash: Double,
+    val mcc: String
 )

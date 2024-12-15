@@ -5,8 +5,7 @@ import java.util.*
 enum class WalletEnum {
     FOOD,
     MEAL,
-    CASH,
-    BENEFICIO;
+    CASH;
 
     companion object {
         fun fromMcc(mcc: String): WalletEnum {
@@ -17,7 +16,7 @@ enum class WalletEnum {
             }
         }
 
-        fun fromName(name: String): WalletEnum {
+        fun fromMerchantName(name: String): WalletEnum {
             val nameUpper = name.uppercase(Locale.getDefault())
             return when {
                 listOf("MERCADO", "MARKET", "FOOD").any { nameUpper.contains(it) } -> FOOD
