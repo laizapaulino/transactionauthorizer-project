@@ -20,6 +20,7 @@ class TransactionController(
     fun createTransaction(
         @RequestBody request: TransactionRequest
     ): ResponseEntity<TransactionResponse> {
+        println("Start request " + request.toString())
         var response: TransactionResponse
         try {
             transactionAuthorizerUseCase.authorize(request)

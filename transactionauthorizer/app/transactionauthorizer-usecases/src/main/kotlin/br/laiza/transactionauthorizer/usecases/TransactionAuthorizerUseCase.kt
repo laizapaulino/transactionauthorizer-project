@@ -1,11 +1,14 @@
 package br.laiza.transactionauthorizer.usecases
 
+
 import br.laiza.transactionauthorizer.core.enums.WalletEnum
 import br.laiza.transactionauthorizer.core.exception.InsuficientFundsException
 import br.laiza.transactionauthorizer.core.interfaces.AmountService
 import br.laiza.transactionauthorizer.core.interfaces.MessageProducer
+
 import br.laiza.transactionauthorizer.core.interfaces.RedisRepository
 import br.laiza.transactionauthorizer.core.message.TransactionMessage
+
 import br.laiza.transactionauthorizer.usecases.dto.TransactionRequest
 import br.laiza.transactionauthorizer.usecases.handler.MccFromMerchantHandler
 import br.laiza.transactionauthorizer.usecases.handler.MccFromTransactionHandler
@@ -28,7 +31,7 @@ open class TransactionAuthorizerUseCase(
         val wallet: WalletEnum = this.findTheMCC(request)
         request.mcc = wallet.toString()
 
-        //descobrir se dinheiro disponivel é suficiente
+
         mapWallets = this.validateAmountIsEnough(
             wallet = wallet,
             transactionRequest = request,

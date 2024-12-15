@@ -9,7 +9,7 @@ import software.amazon.awssdk.services.sqs.model.SqsException
 
 @Component
 class SqsProducer(
-     val sqsClient: SqsClient,
+    val sqsClient: SqsClient,
     @Value("\${queue.transaction.name}") private val queueUrl: String?
 
 ) : MessageProducer {

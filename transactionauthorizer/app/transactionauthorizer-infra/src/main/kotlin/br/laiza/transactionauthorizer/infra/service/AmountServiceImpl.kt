@@ -1,18 +1,22 @@
 package br.laiza.transactionauthorizer.infra.service
 
+
 import br.laiza.transactionauthorizer.core.entities.Account
 import br.laiza.transactionauthorizer.core.entities.Wallet
 import br.laiza.transactionauthorizer.core.enums.WalletEnum
 import br.laiza.transactionauthorizer.core.interfaces.AmountService
 import br.laiza.transactionauthorizer.core.interfaces.RedisRepository
+import br.laiza.transactionauthorizer.core.interfaces.repository.AccountRepository
 import br.laiza.transactionauthorizer.core.message.TransactionMessage
-import br.laiza.transactionauthorizer.infra.repository.AccountRepository
+import org.springframework.beans.factory.annotation.Autowired
+
+
 import org.springframework.stereotype.Service
 
 @Service
 open class AmountServiceImpl(
     private val redisRepository: RedisRepository,
-    private val accountRepository: AccountRepository
+    @Autowired private val accountRepository: AccountRepository
 ) : AmountService {
 
     fun storeTransactionData(key: String, value: TransactionMessage) {
@@ -27,7 +31,7 @@ open class AmountServiceImpl(
             amountWallets = mapAmountWalletsFromMessage(list)
         } else {
             val account: Account = accountRepository.findById(account).get()
-            amountWallets = mapAmountWalletsFromWallet(account.accountList)
+            amountWallets = mapAmountWalletsFromWallet(account.walletList)
 
         }
 

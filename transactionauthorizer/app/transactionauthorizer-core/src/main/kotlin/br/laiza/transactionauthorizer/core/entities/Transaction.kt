@@ -1,8 +1,7 @@
 package br.laiza.transactionauthorizer.core.entities
 
-import br.laiza.transactionauthorizer.core.enums.StatusEnum
 import jakarta.persistence.*
-import java.util.*
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "transaction")
@@ -22,9 +21,13 @@ data class Transaction(
     @Column(nullable = false)
     var merchant: String,
 
+    @Column(nullable = false)
+    var mcc: String,
 
     @Column(nullable = false)
-    var status: StatusEnum,
-
-
-    )
+    val transactionDate: LocalDateTime,
+) {
+    override fun toString(): String {
+        return "Transaction(id=$id)"
+    }
+}

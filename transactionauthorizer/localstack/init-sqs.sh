@@ -39,17 +39,10 @@ create_queue() {
 
 }
 
-create_queue "user-queue"
+create_queue "transaction-queue"
+create_queue "transaction-queue-dlq"
 
 #aws sqs list-queues
 #aws sqs list-queues --endpoint-url=http://localhost:4566 --no-verify-ssl
 
-#aws sqs create-queue --endpoint-url http://localhost:4566 --queue-name user-queue
-
-#--profile localstack
-ls
-
-#aws sqs send-message --endpoint-url http://localhost:4566 --queue-url http://localhost:4566/000000000000/user-queue --message-body "Mensagem de Teste" --message-attributes file://message.json --no-verify-ssl
-#aws sqs send-message --endpoint-url http://localhost:4566 --queue-url http://localhost:4566/000000000000/user-queue --message-body "Mensagem de Teste" --message-attributes file://message.json --no-verify-ssl
-
-#awslocal sqs receive-message --queue-url http://sqs.sa-east-1.localhost.localstack.cloud:4566/000000000000/user-queue
+#aws --endpoint-url=http://localhost:4566 sqs receive-message --queue-url=http://localhost:4566/000000000000/transaction-queue

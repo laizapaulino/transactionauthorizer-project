@@ -16,25 +16,46 @@ services:
     networks:
       - my_network
     restart: always
+    
+    #   Serviço do App Kotlin
+  app:
+    build:
+      context: ./transactionauthorizer/app
+      dockerfile: Dockerfile
+    container_name: myapp
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mydb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+    depends_on:
+      - postgres
+      - localstack
+    ports:
+      - "8081:8081"
+    networks:
+      - my_network
+    restart: always
 
-  # Serviço do App Kotlin
-#  app:
-#    build:
-#      context: ./app
-#      dockerfile: Dockerfile
-#    container_name: myapp
-#    environment:
-#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mydb
-#      SPRING_DATASOURCE_USERNAME: postgres
-#      SPRING_DATASOURCE_PASSWORD: password
-#    depends_on:
-#      - postgres
-#      - localstack
-#    ports:
-#      - "8080:8080"
-#    networks:
-#      - my_network
-#    restart: always
+  
+  
+  ##   Serviço do App Kotlin
+  app-consumer:
+    build:
+      context: ./txauthorizerconsumer/app
+      dockerfile: Dockerfile
+    container_name: app-consumer
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mydb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+    depends_on:
+      - postgres
+      - localstack
+    ports:
+      - "8081:8081"
+    networks:
+      - my_network
+    restart: always
 
   redis:
     image: redis:6.2
@@ -58,7 +79,7 @@ services:
     image: amazon/aws-cli
     entrypoint: [ "sh", "/scripts/init-sqs.sh" ]
     volumes:
-      - ./localstack/init-sqs.sh:/scripts/init-sqs.sh
+      - ./transactionauthorizer/localstack/init-sqs.sh:/scripts/init-sqs.sh
     environment:
       #      - AWS_PROFILE=localstack
       - AWS_ACCESS_KEY_ID=test
@@ -101,3 +122,7 @@ networks:
 #  \dt
 
 # docker stop $(docker ps -a -q)
+#docker container prune
+#  docker-compose up --build
+  
+  

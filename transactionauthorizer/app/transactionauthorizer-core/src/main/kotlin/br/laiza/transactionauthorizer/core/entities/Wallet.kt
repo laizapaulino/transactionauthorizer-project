@@ -1,12 +1,13 @@
 package br.laiza.transactionauthorizer.core.entities
 
 import br.laiza.transactionauthorizer.core.enums.WalletEnum
+import com.fasterxml.jackson.annotation.JsonBackReference
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
-import java.util.*
 
 @Entity
 @Table(name = "wallet")
- data class Wallet(
+data class Wallet(
     @Id
     @GeneratedValue
     @Column(nullable = false, unique = true)
@@ -21,5 +22,10 @@ import java.util.*
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false)
+    @JsonIgnore
     val account: Account
-)
+) {
+    override fun toString(): String {
+        return "Wallet(id=$id)"
+    }
+}

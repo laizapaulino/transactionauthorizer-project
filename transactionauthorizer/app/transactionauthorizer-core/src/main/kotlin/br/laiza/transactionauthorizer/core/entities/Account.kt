@@ -5,26 +5,32 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(name = "account")
-data class Account(
+class Account(
     @Id
-    @GeneratedValue
-    @Column(nullable = false, unique = true)
-    val id: String,
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(unique = true, nullable = false)
+    var id: String? = null,
 
-    @Column(nullable = false, unique = true)
-    val name: String,
-
-    @Column(nullable = false)
-    val email: String,
+    @Column(unique = true, nullable = false)
+    var name: String? = null,
 
     @Column(nullable = false)
-    val createdAt: LocalDateTime = LocalDateTime.now(),
+    var email: String? = null,
+
+    @Column(nullable = false)
+    var createdAt: LocalDateTime = LocalDateTime.now(),
 
     @OneToMany(mappedBy = "account", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    var accountList: List<Wallet> = listOf(),
+    var walletList: List<Wallet> = listOf(),
 
     @OneToMany(mappedBy = "account", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     var transactioList: List<Transaction> = listOf()
+) {
 
+    // Construtor padrão sem argumentos para o Hibernate
+    constructor() : this(id = null, name = null, email = null)
 
-)
+    override fun toString(): String {
+        return "Account(id=$id)"
+    }
+}
