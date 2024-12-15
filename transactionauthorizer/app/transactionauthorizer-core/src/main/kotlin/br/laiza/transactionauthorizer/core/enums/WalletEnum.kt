@@ -1,0 +1,29 @@
+package br.laiza.transactionauthorizer.core.enums
+
+import java.util.*
+
+enum class WalletEnum {
+    FOOD,
+    MEAL,
+    CASH,
+    BENEFICIO;
+
+    companion object {
+        fun fromMcc(mcc: String): WalletEnum {
+            return when (mcc) {
+                "5411", "5412" -> FOOD
+                "5811", "5812" -> MEAL
+                else -> CASH
+            }
+        }
+
+        fun fromName(name: String): WalletEnum {
+            val nameUpper = name.uppercase(Locale.getDefault())
+            return when {
+                listOf("MERCADO", "MARKET", "FOOD").any { nameUpper.contains(it) } -> FOOD
+                listOf("PADARIA", "BAR", "BAKERY", "RESTAURANT", "EATS").any { nameUpper.contains(it) } -> MEAL
+                else -> CASH
+            }
+        }
+    }
+}
