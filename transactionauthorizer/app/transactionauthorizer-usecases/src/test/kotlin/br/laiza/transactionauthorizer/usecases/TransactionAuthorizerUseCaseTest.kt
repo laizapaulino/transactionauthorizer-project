@@ -5,6 +5,7 @@ import br.laiza.transactionauthorizer.core.enums.WalletEnum
 import br.laiza.transactionauthorizer.core.exception.InsuficientFundsException
 import br.laiza.transactionauthorizer.core.interfaces.AmountService
 import br.laiza.transactionauthorizer.core.interfaces.MessageProducer
+import br.laiza.transactionauthorizer.core.interfaces.RedisRepository
 import br.laiza.transactionauthorizer.usecases.dto.TransactionRequest
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -26,6 +27,9 @@ class TransactionAuthorizerUseCaseTest {
 
     @Mock
     lateinit var amountService: AmountService
+
+    @Mock
+    lateinit var redisRepository: RedisRepository
 
     @Mock
     lateinit var messageProducer: MessageProducer
