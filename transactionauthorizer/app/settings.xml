@@ -1,0 +1,4 @@
+<modules>
+    <module>transactionauthorizer-core</module>
+    <module>transactionauthorizer-data</module>
+</modules>
