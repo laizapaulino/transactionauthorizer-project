@@ -2,7 +2,7 @@ package br.laiza.txauthorizerconsumer.infra.messaging
 
 
 
-import br.laiza.transactionauthorizer.core.message.TransactionMessage
+import br.laiza.txauthorizerconsumer.core.message.TransactionMessage
 import br.laiza.txauthorizerconsumer.core.exception.TransactionProcessorException
 import br.laiza.txauthorizerconsumer.core.interfaces.MessageConsumer
 import br.laiza.txauthorizerconsumer.core.interfaces.MessageProducer

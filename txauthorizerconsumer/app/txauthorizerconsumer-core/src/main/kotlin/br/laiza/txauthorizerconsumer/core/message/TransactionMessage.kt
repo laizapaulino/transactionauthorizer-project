@@ -1,5 +1,4 @@
-package br.laiza.transactionauthorizer.core.message
-
+package br.laiza.txauthorizerconsumer.core.message
 import java.time.LocalDateTime
 
 data class TransactionMessage(

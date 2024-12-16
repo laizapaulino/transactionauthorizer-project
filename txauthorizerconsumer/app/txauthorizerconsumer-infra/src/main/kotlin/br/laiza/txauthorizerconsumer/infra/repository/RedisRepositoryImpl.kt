@@ -1,7 +1,7 @@
 package br.laiza.txauthorizerconsumer.infra.repository
 
 
-import br.laiza.transactionauthorizer.core.message.TransactionMessage
+import br.laiza.txauthorizerconsumer.core.message.TransactionMessage
 import br.laiza.txauthorizerconsumer.core.interfaces.RedisRepository
 
 import com.fasterxml.jackson.databind.ObjectMapper

@@ -1,6 +1,6 @@
 package br.laiza.txauthorizerconsumer.core.interfaces
 
-import br.laiza.transactionauthorizer.core.message.TransactionMessage
+import br.laiza.txauthorizerconsumer.core.message.TransactionMessage
 
 
 interface RedisRepository {
