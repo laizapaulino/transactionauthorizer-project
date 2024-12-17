@@ -1,7 +1,6 @@
 package br.laiza.txauthorizerconsumer.infra.messaging
 
 
-import br.laiza.txauthorizerconsumer.core.interfaces.MessageProducer
 import br.laiza.txauthorizerconsumer.core.interfaces.TransactionProcessor
 import br.laiza.txauthorizerconsumer.core.message.TransactionMessage
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -17,6 +16,7 @@ import software.amazon.awssdk.services.sqs.SqsClient
 import software.amazon.awssdk.services.sqs.model.DeleteMessageRequest
 import software.amazon.awssdk.services.sqs.model.Message
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest
+import software.amazon.awssdk.services.sqs.model.ReceiveMessageResponse
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -69,7 +69,9 @@ class SqsConsumerTest {
         `when`(objectMapper.readValue(messageBody, TransactionMessage::class.java))
             .thenReturn(transactionMessage())
 
-        sqsConsumer.consumeMessages()
+        sqsConsumer.consumeMessages(
+            event = TODO()
+        )
 
 
         val deleteMessageCaptor = argumentCaptor<DeleteMessageRequest>()
@@ -78,8 +80,8 @@ class SqsConsumerTest {
     }
 
 
-    private fun mockReceiveMessageResult(vararg messages: Message): software.amazon.awssdk.services.sqs.model.ReceiveMessageResponse {
-        return software.amazon.awssdk.services.sqs.model.ReceiveMessageResponse.builder()
+    private fun mockReceiveMessageResult(vararg messages: Message): ReceiveMessageResponse {
+        return ReceiveMessageResponse.builder()
             .messages(messages.toList())
             .build()
     }

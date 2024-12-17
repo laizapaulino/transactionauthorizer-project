@@ -1,5 +1,5 @@
 package br.laiza.txauthorizerconsumer.core.interfaces
 
 interface MessageConsumer {
-    fun consumeMessages()
+    fun consumeMessage(event: String)
 }

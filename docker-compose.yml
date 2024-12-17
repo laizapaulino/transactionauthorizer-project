@@ -41,23 +41,23 @@ services:
 
   
 #  #   Serviço do App Kotlin
-#  app-consumer:
-#    build:
-#      context: ./txauthorizerconsumer/app
-#      dockerfile: Dockerfile
-#    container_name: app-consumer
-#    environment:
-#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mydb
-#      SPRING_DATASOURCE_USERNAME: postgres
-#      SPRING_DATASOURCE_PASSWORD: password
-#    depends_on:
-#      - postgres
-#      - localstack
-#    ports:
-#      - "8081:8081"
-#    networks:
-#      - my_network
-#    restart: always
+  app-consumer:
+    build:
+      context: ./txauthorizerconsumer/app
+      dockerfile: Dockerfile
+    container_name: app-consumer
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mydb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+    depends_on:
+      - postgres
+      - localstack
+    ports:
+      - "8081:8081"
+    networks:
+      - my_network
+    restart: always
 
   redis:
     image: redis:6.2
