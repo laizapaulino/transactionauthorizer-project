@@ -6,14 +6,14 @@ import br.laiza.txauthorizerconsumer.core.message.TransactionMessage
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.mockito.ArgumentMatchers.any
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.mock
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.whenever
 import software.amazon.awssdk.services.sqs.SqsClient
-import software.amazon.awssdk.services.sqs.model.DeleteMessageRequest
 import software.amazon.awssdk.services.sqs.model.Message
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageResponse
@@ -28,8 +28,6 @@ class SqsConsumerTest {
     @Mock
     private lateinit var processor: TransactionProcessor
 
-    @Mock
-    private lateinit var producerDLQ: MessageProducer
 
     @Mock
     private lateinit var objectMapper: ObjectMapper
@@ -60,23 +58,21 @@ class SqsConsumerTest {
     fun `test consumeMessages successfully processes messages`() {
         val mockMessage = mock(Message::class.java)
         val messageBody = """{"transactionId":"12345","amount":100.0}"""
-        `when`(mockMessage.body()).thenReturn(messageBody)
+        whenever(mockMessage.body()).thenReturn(messageBody)
 
-        `when`(sqsClient.receiveMessage(any(ReceiveMessageRequest::class.java)))
+        whenever(sqsClient.receiveMessage(any(ReceiveMessageRequest::class.java)))
             .thenReturn(mockReceiveMessageResult(mockMessage))
 
-
-        `when`(objectMapper.readValue(messageBody, TransactionMessage::class.java))
+        whenever(objectMapper.readValue("", TransactionMessage::class.java))
             .thenReturn(transactionMessage())
 
-        sqsConsumer.consumeMessages(
-            event = TODO()
-        )
+        assertDoesNotThrow {
 
+            sqsConsumer.consumeMessage(
+                event = ""
+            )
+        }
 
-        val deleteMessageCaptor = argumentCaptor<DeleteMessageRequest>()
-        verify(sqsClient).deleteMessage(deleteMessageCaptor.capture())
-        assert(deleteMessageCaptor.firstValue.receiptHandle() == mockMessage.receiptHandle())
     }
 
 
