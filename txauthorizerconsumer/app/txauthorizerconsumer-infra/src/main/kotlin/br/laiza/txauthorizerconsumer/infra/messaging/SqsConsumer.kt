@@ -1,14 +1,11 @@
 package br.laiza.txauthorizerconsumer.infra.messaging
 
 
-
-import br.laiza.txauthorizerconsumer.core.message.TransactionMessage
 import br.laiza.txauthorizerconsumer.core.exception.TransactionProcessorException
 import br.laiza.txauthorizerconsumer.core.interfaces.MessageConsumer
 import br.laiza.txauthorizerconsumer.core.interfaces.MessageProducer
 import br.laiza.txauthorizerconsumer.core.interfaces.TransactionProcessor
-
-
+import br.laiza.txauthorizerconsumer.core.message.TransactionMessage
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.beans.factory.annotation.Value
@@ -39,7 +36,7 @@ class SqsConsumer(
             processMessage(messages)
 
         } catch (e: SqsException) {
-            println("Erro ao processar mensagem: ${e.message}")
+            println("Error processing the message: ${e.message}")
 
 
             throw e

@@ -6,6 +6,7 @@ import br.laiza.transactionauthorizer.core.exception.InsuficientFundsException
 import br.laiza.transactionauthorizer.core.interfaces.AmountService
 import br.laiza.transactionauthorizer.core.interfaces.MessageProducer
 import br.laiza.transactionauthorizer.core.interfaces.RedisRepository
+import br.laiza.transactionauthorizer.core.message.MessageRedis
 import br.laiza.transactionauthorizer.usecases.dto.TransactionRequest
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -18,9 +19,11 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.whenever
+import java.math.BigDecimal
+import java.time.LocalDateTime
 import kotlin.test.BeforeTest
 
-class TransactionAuthorizerUseCaseTest {
+open class TransactionAuthorizerUseCaseTest {
 
     @InjectMocks
     lateinit var transaction: TransactionAuthorizerUseCase
@@ -52,16 +55,26 @@ class TransactionAuthorizerUseCaseTest {
         "10.0, 10.0, 10.0, 5.0, BOUTIQUE FASHION, 9999",  //  funds from 2 wallet
     )
     fun `should proccess authorization`(
-        foodWallet: Double, mealWallet: Double, cashWallet: Double, amount: Double,
+        foodWalletStr: String, mealWalletStr: String, cashWalletStr: String, amountStr: String,
         merchantName: String, mcc: String
     ) {
+        val foodWallet: BigDecimal = BigDecimal(foodWalletStr)
+        val mealWallet: BigDecimal = BigDecimal(mealWalletStr)
+        val cashWallet: BigDecimal = BigDecimal(cashWalletStr)
+        val amount: BigDecimal = BigDecimal(amountStr)
 
         whenever(amountService.availableAmount(any())).thenReturn(
-            hashMapOf(
-                WalletEnum.FOOD.toString() to foodWallet,
-                WalletEnum.MEAL.toString() to mealWallet,
-                WalletEnum.CASH.toString() to cashWallet
+            MessageRedis(
+                account = "1234",
+                name = "TESTE",
+                dateLastAccessed = LocalDateTime.now(),
+                listWallet = hashMapOf(
+                    WalletEnum.FOOD.toString() to foodWallet,
+                    WalletEnum.MEAL.toString() to mealWallet,
+                    WalletEnum.CASH.toString() to cashWallet
+                )
             )
+
         )
 
         whenever(objectMapper.writeValueAsString(any())).thenReturn("{\"key\":\"value\"}")
@@ -88,18 +101,25 @@ class TransactionAuthorizerUseCaseTest {
     fun `should proccess authorization with no funds`(merchantName: String, mcc: String) {
 
         whenever(amountService.availableAmount(any())).thenReturn(
-            hashMapOf(
-                WalletEnum.FOOD.toString() to 10.0,
-                WalletEnum.MEAL.toString() to 10.0,
-                WalletEnum.CASH.toString() to 10.0
+            MessageRedis(
+                account = "1234",
+                name = "TESTE",
+                dateLastAccessed = LocalDateTime.now(),
+                listWallet = hashMapOf(
+                    WalletEnum.FOOD.toString() to BigDecimal.valueOf(10.0),
+                    WalletEnum.MEAL.toString() to BigDecimal.valueOf(10.0),
+                    WalletEnum.CASH.toString() to BigDecimal.valueOf(10.0)
+                )
             )
         )
+
+
         whenever(objectMapper.writeValueAsString(any())).thenReturn("{\"key\":\"value\"}")
 
         val request = TransactionRequest(
             account = "1234",
             mcc = mcc,
-            totalAmount = 21.00,
+            totalAmount = BigDecimal.valueOf(21.00),
             merchant = merchantName
         )
         assertThrows<InsuficientFundsException> { transaction.authorize(request) }

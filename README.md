@@ -45,3 +45,8 @@ curl --request POST \
 }'
 
 Por padrão, assim que a aplicação subir, um usuário com 3 carteiras é criado.
+
+Para visualizar os valores da carteira
+
+curl --request GET \
+--url http://localhost:8080/api/v1/fundsAccount/1 \

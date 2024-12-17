@@ -1,9 +1,8 @@
 package br.laiza.transactionauthorizer.core.entities
 
 import br.laiza.transactionauthorizer.core.enums.WalletEnum
-import com.fasterxml.jackson.annotation.JsonBackReference
-import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
+import java.math.BigDecimal
 
 @Entity
 @Table(name = "wallet")
@@ -18,11 +17,10 @@ data class Wallet(
     var type: WalletEnum,
 
     @Column(nullable = false)
-    var amount: Double,
+    var amount: BigDecimal,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false)
-    @JsonIgnore
     val account: Account
 ) {
     override fun toString(): String {

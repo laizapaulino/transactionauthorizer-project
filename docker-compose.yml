@@ -1,7 +1,7 @@
 #version: '3.8'
 
 services:
-  # Serviço PostgreSQL
+  ### Serviço PostgreSQL
   postgres:
     image: postgres:latest
     container_name: mypostgres
@@ -16,8 +16,8 @@ services:
     networks:
       - my_network
     restart: always
-    
-    #   Serviço do App Kotlin
+  
+  ###     Serviço do App Kotlin
   app:
     build:
       context: ./transactionauthorizer/app
@@ -27,35 +27,37 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mydb
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: password
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
     depends_on:
+      - redis
       - postgres
       - localstack
     ports:
-      - "8081:8081"
+      - "8080:8080"
     networks:
       - my_network
     restart: always
 
   
-  
-  ##   Serviço do App Kotlin
-  app-consumer:
-    build:
-      context: ./txauthorizerconsumer/app
-      dockerfile: Dockerfile
-    container_name: app-consumer
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mydb
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: password
-    depends_on:
-      - postgres
-      - localstack
-    ports:
-      - "8081:8081"
-    networks:
-      - my_network
-    restart: always
+#  #   Serviço do App Kotlin
+#  app-consumer:
+#    build:
+#      context: ./txauthorizerconsumer/app
+#      dockerfile: Dockerfile
+#    container_name: app-consumer
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mydb
+#      SPRING_DATASOURCE_USERNAME: postgres
+#      SPRING_DATASOURCE_PASSWORD: password
+#    depends_on:
+#      - postgres
+#      - localstack
+#    ports:
+#      - "8081:8081"
+#    networks:
+#      - my_network
+#    restart: always
 
   redis:
     image: redis:6.2
@@ -63,7 +65,8 @@ services:
     ports:
       - "6379:6379" # Mapeamento de porta local para a porta do container
     networks:
-      - redis-network # Definição da rede
+      - my_network
+
     volumes:
       - redis-data:/data # Persistência de dados
     command: [ "redis-server", "--appendonly", "yes" ] # Configura o Redis para usar persistência AOF (Append-Only File)
@@ -81,7 +84,6 @@ services:
     volumes:
       - ./transactionauthorizer/localstack/init-sqs.sh:/scripts/init-sqs.sh
     environment:
-      #      - AWS_PROFILE=localstack
       - AWS_ACCESS_KEY_ID=test
       - AWS_SECRET_ACCESS_KEY=test
       - AWS_DEFAULT_REGION=sa-east-1
@@ -102,8 +104,6 @@ services:
     volumes:
       - "./localstack:/etc/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
-      #      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
-      #      - ./init-sqs.sh:/scripts/init-sqs.sh
       - ./volume:/volume
 
 volumes:
@@ -113,16 +113,9 @@ volumes:
 networks:
   my_network:
     driver: bridge
-  redis-network:
-    driver: bridge
 
-#docker exec -it mypostgres bash
-#  psql -U postgres
-# \c mydb
-#  \dt
-
-# docker stop $(docker ps -a -q)
-#docker container prune
-#  docker-compose up --build
+  
+  #docker container prune
+  #  docker-compose up --build
   
   

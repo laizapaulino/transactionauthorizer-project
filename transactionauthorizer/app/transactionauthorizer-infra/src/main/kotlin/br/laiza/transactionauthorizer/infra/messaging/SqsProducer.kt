@@ -23,9 +23,9 @@ class SqsProducer(
                 .build()
 
             val response = sqsClient.sendMessage(request)
-            println("Mensagem enviada com sucesso! MessageId: ${response.messageId()}")
+            println("Message sent! MessageId: ${response.messageId()}")
         } catch (e: SqsException) {
-            println("Erro ao enviar mensagem: ${e.message}")
+            println("Error message not sent: ${e.message}")
             throw e
         }
     }

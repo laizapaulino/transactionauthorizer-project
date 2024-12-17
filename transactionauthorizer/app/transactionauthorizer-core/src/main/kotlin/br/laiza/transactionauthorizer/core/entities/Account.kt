@@ -27,7 +27,6 @@ class Account(
     var transactioList: List<Transaction> = listOf()
 ) {
 
-    // Construtor padrão sem argumentos para o Hibernate
     constructor() : this(id = null, name = null, email = null)
 
     override fun toString(): String {

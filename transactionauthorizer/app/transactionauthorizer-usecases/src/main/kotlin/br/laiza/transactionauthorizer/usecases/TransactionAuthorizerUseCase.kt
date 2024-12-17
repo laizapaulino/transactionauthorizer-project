@@ -2,11 +2,13 @@ package br.laiza.transactionauthorizer.usecases
 
 
 import br.laiza.transactionauthorizer.core.enums.WalletEnum
+import br.laiza.transactionauthorizer.core.enums.WalletEnum.*
 import br.laiza.transactionauthorizer.core.exception.InsuficientFundsException
 import br.laiza.transactionauthorizer.core.interfaces.AmountService
 import br.laiza.transactionauthorizer.core.interfaces.MessageProducer
 
 import br.laiza.transactionauthorizer.core.interfaces.RedisRepository
+import br.laiza.transactionauthorizer.core.message.MessageRedis
 import br.laiza.transactionauthorizer.core.message.TransactionMessage
 
 import br.laiza.transactionauthorizer.usecases.dto.TransactionRequest
@@ -14,6 +16,7 @@ import br.laiza.transactionauthorizer.usecases.handler.MccFromMerchantHandler
 import br.laiza.transactionauthorizer.usecases.handler.MccFromTransactionHandler
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 import java.time.LocalDateTime
 
 @Service
@@ -25,17 +28,19 @@ open class TransactionAuthorizerUseCase(
 ) {
 
     fun authorize(request: TransactionRequest) {
-        var mapWallets: HashMap<String, Double> = amountService.availableAmount(request.account)
+        var messageRedis: MessageRedis? = amountService.availableAmount(request.account)
 
-
+        if (messageRedis == null) {
+            throw Exception()
+        }
         val wallet: WalletEnum = this.findTheMCC(request)
         request.mcc = wallet.toString()
 
 
-        mapWallets = this.validateAmountIsEnough(
+        messageRedis = this.validateAmountIsEnough(
             wallet = wallet,
             transactionRequest = request,
-            mapWallets = mapWallets
+            message = messageRedis
         )
 
 
@@ -43,17 +48,23 @@ open class TransactionAuthorizerUseCase(
             account = request.account,
             transactionDate = LocalDateTime.now(),
             amountTransaction = request.totalAmount,
-            newAmountWalletFood = mapWallets.get(WalletEnum.FOOD.name)!!,
-            newAmountWalletMeal = mapWallets.get(WalletEnum.MEAL.name)!!,
-            newAmountWalletCash = mapWallets.get(WalletEnum.CASH.name)!!,
-            mcc = request.mcc
+            newAmountWalletFood = messageRedis.listWallet[FOOD.name]!!,
+            newAmountWalletMeal = messageRedis.listWallet[MEAL.name]!!,
+            newAmountWalletCash = messageRedis.listWallet[CASH.name]!!,
+            mcc = request.mcc,
+            merchant = request.merchant
         )
 
+        messageRedis.dateLastAccessed = LocalDateTime.now()
 
-        redisRepository.saveDataTransaction(request.account, transactionMessage)
+        redisRepository.saveDataTransaction(request.account, messageRedis)
 
-        messageProducer.produceMessage(objectMapper.writeValueAsString(transactionMessage))
+        try {
+            messageProducer.produceMessage(objectMapper.writeValueAsString(transactionMessage))
 
+        } catch (e: Exception) {
+            println("aws sqs not available")
+        }
 
     }
 
@@ -71,35 +82,36 @@ open class TransactionAuthorizerUseCase(
             if (result != null) break
         }
 
-        return result ?: WalletEnum.CASH
+        return result ?: CASH
     }
 
 
     private fun validateAmountIsEnough(
         wallet: WalletEnum,
         transactionRequest: TransactionRequest,
-        mapWallets: HashMap<String, Double>
-    ): HashMap<String, Double> {
+        message: MessageRedis
+    ): MessageRedis {
 
-        var amountAvailable: Double = mapWallets.get(wallet.name)!!
-        amountAvailable -= transactionRequest.totalAmount
+        var amountAvailable: BigDecimal = message.listWallet.get(wallet.name)!!
+        amountAvailable = amountAvailable.subtract(transactionRequest.totalAmount)
 
 
-        if (amountAvailable < 0) {
-            if (wallet.name == WalletEnum.CASH.name) {
+        if (amountAvailable.compareTo(BigDecimal.ZERO) < 0) {
+            if (wallet.name == CASH.name) {
                 throw InsuficientFundsException("Insuficient funds")
             }
-            var amountAvailableAux: Double = mapWallets.get(WalletEnum.CASH.name)!!
-            amountAvailableAux += amountAvailable
-            if (amountAvailableAux < 0) {
+            var amountAvailableAux: BigDecimal = message.listWallet.get(CASH.name)!!
+            amountAvailableAux = amountAvailableAux.add(amountAvailable)
+            if (amountAvailableAux.compareTo(BigDecimal.ZERO)  < 0) {
                 throw InsuficientFundsException("Insuficient funds")
             }
-            mapWallets[WalletEnum.CASH.name] = amountAvailableAux
-            mapWallets[wallet.name] = 0.0
+            message.listWallet[CASH.name] = amountAvailableAux.setScale(2)
+            message.listWallet[wallet.name] = BigDecimal.valueOf(0.00).setScale(2)
+
         } else {
-            mapWallets[WalletEnum.CASH.name] = amountAvailable
+            message.listWallet[wallet.name] = amountAvailable.setScale(2)
         }
-        return mapWallets
+        return message
     }
 
 }

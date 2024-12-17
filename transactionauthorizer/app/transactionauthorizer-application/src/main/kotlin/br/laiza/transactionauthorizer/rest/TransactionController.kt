@@ -20,7 +20,7 @@ class TransactionController(
     fun createTransaction(
         @RequestBody request: TransactionRequest
     ): ResponseEntity<TransactionResponse> {
-        println("Start request " + request.toString())
+        println("Start request: transactions")
         var response: TransactionResponse
         try {
             transactionAuthorizerUseCase.authorize(request)
@@ -32,7 +32,7 @@ class TransactionController(
                 code = "51"
             )
         } catch (exception: Exception) {
-            print(exception.localizedMessage)
+            println(exception.localizedMessage)
             response = TransactionResponse(
                 code = "07"
             )
@@ -41,4 +41,6 @@ class TransactionController(
         return ResponseEntity.ok(response)
 
     }
+
+
 }

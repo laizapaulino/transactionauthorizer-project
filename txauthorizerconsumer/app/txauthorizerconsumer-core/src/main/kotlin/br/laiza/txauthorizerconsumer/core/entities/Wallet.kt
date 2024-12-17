@@ -3,6 +3,7 @@ package br.laiza.txauthorizerconsumer.core.entities
 
 import br.laiza.txauthorizerconsumer.core.enums.WalletEnum
 import jakarta.persistence.*
+import java.math.BigDecimal
 
 @Entity
 @Table(name = "wallet")
@@ -17,7 +18,7 @@ data class Wallet(
     var type: WalletEnum,
 
     @Column(nullable = false)
-    var amount: Double,
+    var amount: BigDecimal,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false)

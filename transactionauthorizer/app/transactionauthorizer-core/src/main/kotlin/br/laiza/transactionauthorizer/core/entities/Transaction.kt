@@ -1,6 +1,7 @@
 package br.laiza.transactionauthorizer.core.entities
 
 import jakarta.persistence.*
+import java.math.BigDecimal
 import java.time.LocalDateTime
 
 @Entity
@@ -16,7 +17,7 @@ data class Transaction(
     val account: Account,
 
     @Column(nullable = false)
-    var totalAmount: Double,
+    var totalAmount: BigDecimal,
 
     @Column(nullable = false)
     var merchant: String,
