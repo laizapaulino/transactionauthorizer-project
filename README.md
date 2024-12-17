@@ -11,7 +11,7 @@ Para a criação desse sistema, foram usados:
   - Postgres
 
 
-## Lógica do sistema
+## Fluxo do sistema
 
 O sistema do autorizador de transações foi pensado conforme o desenho abaixo
 
